@@ -1,0 +1,20 @@
+# MATLAB / Simulink generated cache files
+*.slxc
+*.asv
+*.m~
+*.autosave
+*.tmp
+*.log
+*.bak
+
+# MATLAB code generation / build folders
+slprj/
+codegen/
+*_ert_rtw/
+*_grt_rtw/
+
+# Operating system files
+.DS_Store
+Thumbs.db
+desktop.ini
+
