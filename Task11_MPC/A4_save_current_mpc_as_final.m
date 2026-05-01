@@ -5,11 +5,15 @@
 
 clc;
 
+% Work inside the Task 11 folder so the backup file is saved beside the
+% Simulink model and can be loaded by A2_run_task11.m.
 thisFolder = fileparts(mfilename('fullpath'));
 oldFolder = pwd;
 cleanupObj = onCleanup(@() cd(oldFolder));
 cd(thisFolder);
 
+% Identify all MPC controller objects currently available in the base
+% workspace. MPC Designer exports tuned controllers to the base workspace.
 vars = evalin('base', 'whos');
 isMpc = strcmp({vars.class}, 'mpc');
 mpcVars = vars(isMpc);
@@ -34,9 +38,12 @@ else
     end
 end
 
+% Copy the selected controller into the standard variable name expected by
+% the MPC Controller block in task11_simulink.slx.
 mpc1 = evalin('base', selectedName);
 assignin('base', 'mpc1', mpc1);
 
+% Save a reproducible backup so the tuned controller can be restored later.
 save('mpc1_backup.mat', 'mpc1');
 
 fprintf('\nFinal Task 11 MPC controller saved to:\n  %s\n', fullfile(thisFolder, 'mpc1_backup.mat'));

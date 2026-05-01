@@ -5,13 +5,18 @@
 
 clear; clc; close all;
 
+% Use the script folder as the working directory so all data, plots and
+% saved results are written beside the Task 6 files.
 thisFolder = fileparts(mfilename('fullpath'));
 cd(thisFolder);
 
+% Read the calibration sheet and its associated operating conditions.
 filename = 'data_calibration_validation.xlsx';
 sheetName = 'Data for Calibration';
 S = read_assignment_data(filename, sheetName);
 
+% Store constants in a structure so the optimisation function is explicit
+% about which plant parameters it uses.
 const = struct( ...
     'q', 100, ...
     'V', 100, ...
@@ -31,7 +36,7 @@ ydata = [S.T, S.CA];
 y0 = [S.T0; S.CA0];
 optsODE = odeset('RelTol', 1e-8, 'AbsTol', 1e-10);
 
-% Fit in log10-space to keep k0 positive.
+% Fit in log10-space to keep k0 positive and improve numerical conditioning.
 p0 = log10(6.3e10);
 lb = 7;
 ub = 13;
@@ -40,6 +45,7 @@ options = optimoptions('lsqnonlin', ...
     'FunctionTolerance', 1e-10, ...
     'StepTolerance', 1e-10);
 
+% Minimise normalised residuals between measured and simulated T and C_A.
 [p_fit, resnorm, residual, exitflag, output, ~, jacobian] = lsqnonlin( ...
     @(p) Task_6_Error_Calc(p, tdata, ydata, const), ...
     p0, lb, ub, options);
@@ -48,6 +54,8 @@ k0_calibrated = 10.^p_fit;
 ci_p = nlparci(p_fit, residual, 'jacobian', jacobian);
 ci_k0 = 10.^ci_p;
 
+% Re-simulate with the fitted value so calibration metrics and plots use the
+% final model, not the optimiser residual vector directly.
 [~, y_fit] = ode45(@(t, y) Task_6_Calibrate_Model(t, y, k0_calibrated, const), ...
     tdata, y0, optsODE);
 
@@ -57,6 +65,7 @@ CA_fit = y_fit(:, 2);
 metrics_T = calc_error_metrics(S.T, T_fit);
 metrics_CA = calc_error_metrics(S.CA, CA_fit);
 
+% Print enough information to reproduce the calibration table in the report.
 fprintf('\n===== Task 6 calibration result =====\n');
 fprintf('Estimated k0        = %.6e 1/s\n', k0_calibrated);
 fprintf('95%% CI for k0       = [%.6e, %.6e]\n', ci_k0(1, 1), ci_k0(1, 2));
@@ -76,6 +85,7 @@ resultTable = table(k0_calibrated, ci_k0(1, 1), ci_k0(1, 2), ...
     'VariableNames', {'k0_calibrated', 'k0_CI_low', 'k0_CI_high', ...
     'RMSE_T', 'MAE_T', 'R2_T', 'RMSE_CA', 'MAE_CA', 'R2_CA'});
 
+% Save numerical results for validate.m and sensitivity_k0.m.
 save('task6_calibration_results.mat', 'k0_calibrated', 'ci_k0', 'const', ...
     'resultTable', 'T_fit', 'CA_fit');
 writetable(resultTable, 'task6_calibration_results.xlsx');
@@ -106,6 +116,7 @@ grid on;
 saveas(fig1, 'task6_calibration_fit.png');
 savefig(fig1, 'task6_calibration_fit.fig');
 
+% Residual plots are saved as a diagnostic check on systematic model error.
 fig2 = figure('Color', 'w', 'Name', 'Task 6 Calibration Residuals');
 tiledlayout(2, 1, 'Padding', 'compact', 'TileSpacing', 'compact');
 

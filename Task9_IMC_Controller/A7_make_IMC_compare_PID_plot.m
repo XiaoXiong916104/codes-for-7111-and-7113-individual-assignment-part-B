@@ -17,8 +17,9 @@ cd(thisFolder);
 % ==== Run both Task 9 controllers under the same conditions ====
 % Do not reuse old base-workspace outputs here. Task 9 needs a fair IMC vs
 % PID comparison using the same setpoint profile and disturbances.
-if exist('A1_Task9_param_consts.m', 'file') == 2
-    run('A1_Task9_param_consts.m');
+if exist('A2_Task9_param_consts.m', 'file') == 2
+    % Load the shared Task 9 plant constants before running both models.
+    run('A2_Task9_param_consts.m');
 end
 out_IMC = sim('A5_IMC_control.slx');
 assignin('base', 'out_IMC', out_IMC);

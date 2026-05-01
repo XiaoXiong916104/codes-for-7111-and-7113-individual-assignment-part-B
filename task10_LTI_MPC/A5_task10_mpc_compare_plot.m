@@ -174,11 +174,11 @@ function [t, T, CA, tTc, Tc] = local_task9_controller_data(task9Folder, controll
     % Always regenerate the Task 9 controller response here. This prevents
     % stale Task 8/Task 10 workspace data from being reused and keeps PID and
     % IMC on the same Task 9 setpoint/disturbance conditions.
-    if exist('A1_Task9_param_consts.m', 'file') == 2
+    if exist('A2_Task9_param_consts.m', 'file') == 2
         % Simulink plant parameters such as dHr, rho, Cp, and UA are
         % evaluated in the MATLAB base workspace. This code is inside a
         % local function, so evalin('base', ...) is required here.
-        evalin('base', 'run(''A1_Task9_param_consts.m'')');
+        evalin('base', 'run(''A2_Task9_param_consts.m'')');
     end
     simOut = sim(modelName);
     assignin('base', outVar, simOut);

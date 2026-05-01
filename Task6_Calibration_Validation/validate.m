@@ -5,14 +5,18 @@
 
 clear; clc; close all;
 
+% Use local paths so the script can be run from any MATLAB current folder.
 thisFolder = fileparts(mfilename('fullpath'));
 cd(thisFolder);
 addpath(fullfile(thisFolder, '..', 'Common'));
 
+% Read the independent validation dataset.
 filename = 'data_calibration_validation.xlsx';
 sheetName = 'Data for validation';
 S = read_assignment_data(filename, sheetName);
 
+% Compare the default kinetic parameter with the calibrated value. If the
+% calibration result file exists, use that saved fitted value.
 k0_default = 5.0e10;
 k0_calibrated = 6.3e10;
 if isfile('task6_calibration_results.mat')
@@ -22,6 +26,7 @@ if isfile('task6_calibration_results.mat')
     end
 end
 
+% Constants are kept identical between the default and calibrated cases.
 const = struct( ...
     'q', 100, ...
     'V', 100, ...
@@ -39,6 +44,7 @@ const = struct( ...
 y0 = [S.T0; S.CA0];
 optsODE = odeset('RelTol', 1e-8, 'AbsTol', 1e-10);
 
+% Run both model variants on the same validation time vector.
 [~, y_default] = ode45(@(t, y) Task_6_Calibrate_Model(t, y, k0_default, const), ...
     S.t, y0, optsODE);
 [~, y_calib] = ode45(@(t, y) Task_6_Calibrate_Model(t, y, k0_calibrated, const), ...
@@ -54,6 +60,7 @@ metrics_CA_default = calc_error_metrics(S.CA, CA_default);
 metrics_T_calib = calc_error_metrics(S.T, T_calib);
 metrics_CA_calib = calc_error_metrics(S.CA, CA_calib);
 
+% Print validation statistics used in the report table.
 fprintf('\n===== Task 6 validation metrics =====\n');
 fprintf('Default k0     = %.6e 1/s\n', k0_default);
 fprintf('Calibrated k0  = %.6e 1/s\n\n', k0_calibrated);
@@ -77,6 +84,7 @@ summaryTable = table( ...
     'VariableNames', {'Model', 'RMSE_T', 'R2_T', 'RMSE_CA', 'R2_CA'});
 writetable(summaryTable, 'task6_validation_results.xlsx');
 
+% Plot data and both model predictions on the same axes for direct comparison.
 fig = figure('Color', 'w', 'Name', 'Task 6 Validation');
 tiledlayout(2, 1, 'Padding', 'compact', 'TileSpacing', 'compact');
 
