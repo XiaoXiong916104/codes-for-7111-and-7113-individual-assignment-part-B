@@ -7,6 +7,10 @@
 *.log
 *.bak
 
+# Generated report figures
+*.png
+*.fig
+
 # MATLAB code generation / build folders
 slprj/
 codegen/
@@ -17,4 +21,3 @@ codegen/
 .DS_Store
 Thumbs.db
 desktop.ini
-
