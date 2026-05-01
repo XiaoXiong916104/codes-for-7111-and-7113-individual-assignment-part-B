@@ -1,0 +1,59 @@
+CHEE7111 / CHEE7113 Assignment Part B - Code Running Notes
+
+Please keep the submitted folder structure unchanged. The MATLAB scripts are
+organised by task folder, and several later tasks reuse results or controller
+objects from earlier task folders.
+
+General path note
+-----------------
+The file project_paths.m provides a central folder map for scripts that need to
+find another task folder. If MATLAB cannot locate a folder after the repository
+has been downloaded on another computer, open project_paths.m and edit only the
+CODE_ROOT line to the full local path of this repository folder.
+
+Task-by-task guide
+------------------
+Task 5:
+Run param_consts.m before the MATLAB model and Simulink simulations. The main
+MATLAB ODE script is driver.m, and the ODE function is Func.m.
+
+Task 6:
+Run calibrate.m, validate.m and sensitivity_k0.m for calibration, validation and
+k0 sensitivity analysis. These scripts use data_calibration_validation.xlsx and
+the helper functions read_assignment_data.m, Task_6_Calibrate_Model.m and
+Task_6_Error_Calc.m.
+
+Task 7:
+Use open_loop.slx for the open-loop Simulink implementation. Run
+make_plot_for_compare_with_task5.m to compare the Simulink result with the Task
+5 MATLAB ODE result. make_plot_for_simulink.m can also be used to export plots
+from existing T_out and CA_out workspace signals.
+
+Task 8:
+Use closed_loop_PID.slx with A1_Task8_param_consts.m. The other Task 8 scripts
+whose names start with A generate the response plots and high-setpoint test
+results.
+
+Task 9:
+Use A5_IMC_control.slx and A6_PID_control.slx for the IMC and PID comparison.
+The other Task 9 files whose names start with A are the steady-state,
+parameter, FOPDT identification and comparison-plot scripts.
+
+Task 10:
+Run A1_task10_linearize.m and A2_mpc_setup.m first if the linearisation and MPC
+object need to be regenerated. A3_task10_run_mpc_simulink.m loads the final MPC
+workspace and updates mpcobj_1.slx. The other Task 10 files whose names start
+with A generate the saved results, comparison plots and coolant-temperature
+stability scan.
+
+Task 11:
+Run A2_run_task11.m before running task11_simulink.slx. This loads the required
+base-workspace MPC object named mpc1 from mpc1_backup.mat if it is not already
+present. The other Task 11 files whose names start with A are used for
+steady-state calculation, plotting and saving the final MPC backup.
+
+Generated files
+---------------
+Generated figures are not included in the GitHub repository. The scripts can be
+run again to regenerate them. MATLAB cache files such as .slxc and slprj folders
+are also intentionally excluded.
